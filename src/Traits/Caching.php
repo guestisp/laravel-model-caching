@@ -41,7 +41,7 @@ trait Caching
 
         $this->cache($tags)->flush();
 
-        [$cacheCooldown] = $this->getModelCacheCooldown($this);
+        list ($cacheCooldown) = $this->getModelCacheCooldown($this);
 
         if ($cacheCooldown) {
             $cachePrefix = $this->getCachePrefix();
@@ -92,7 +92,7 @@ trait Caching
     {
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
-        [$cacheCooldown, $invalidatedAt, $savedAt] = $this
+        list ($cacheCooldown, $invalidatedAt, $savedAt) = $this
             ->getCacheCooldownDetails($instance, $cachePrefix, $modelClassName);
 
         if (! $cacheCooldown || $cacheCooldown === 0) {
@@ -126,7 +126,7 @@ trait Caching
 
     protected function checkCooldownAndRemoveIfExpired(Model $instance)
     {
-        [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
+        list ($cacheCooldown, $invalidatedAt) = $this->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown
             || (new Carbon)->now()->diffInSeconds($invalidatedAt) < $cacheCooldown
@@ -151,7 +151,7 @@ trait Caching
 
     protected function checkCooldownAndFlushAfterPersiting(Model $instance)
     {
-        [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
+        list ($cacheCooldown, $invalidatedAt) = $instance->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown) {
             $instance->flushCache();
